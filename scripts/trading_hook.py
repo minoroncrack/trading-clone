@@ -24,6 +24,16 @@ STOCK_KEYWORDS = re.compile(
 TICKER_RE = re.compile(r"\$([A-Z]{1,5})\b|(?<!\w)([A-Z]{2,5})(?!\w)")
 
 # Well-known tickers to help avoid false positives on all-caps words
+COMPANY_TO_TICKER = {
+    "apple": "AAPL", "microsoft": "MSFT", "google": "GOOGL", "alphabet": "GOOGL",
+    "amazon": "AMZN", "nvidia": "NVDA", "meta": "META", "facebook": "META",
+    "tesla": "TSLA", "netflix": "NFLX", "spotify": "SPOT", "uber": "UBER",
+    "airbnb": "ABNB", "coinbase": "COIN", "palantir": "PLTR", "snowflake": "SNOW",
+    "shopify": "SHOP", "square": "SQ", "paypal": "PYPL", "visa": "V",
+    "mastercard": "MA", "jpmorgan": "JPM", "goldman": "GS", "morgan stanley": "MS",
+    "berkshire": "BRK", "walmart": "WMT", "disney": "DIS", "boeing": "BA",
+}
+
 KNOWN_TICKERS = {
     "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA",
     "BRK", "JPM", "V", "UNH", "JNJ", "XOM", "PG", "MA", "HD", "CVX",
@@ -54,6 +64,12 @@ def extract_ticker(prompt: str) -> str:
     for w in words:
         if w in KNOWN_TICKERS:
             return w
+
+    # Priority 3: company name mention
+    prompt_lower = prompt.lower()
+    for company, ticker in COMPANY_TO_TICKER.items():
+        if company in prompt_lower:
+            return ticker
 
     return ""
 
